@@ -55,7 +55,7 @@ we don't want to do this, as it would load the script in every web component.
   }
 
   async attributeChangedCallback(name, oldVal, newVal) {
-    if (name !== "src"){
+    if (name === "src"){
       var data = await fetch(newVal);
       var text = await data.text();
       PRready(200, () => {
