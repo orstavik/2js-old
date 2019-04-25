@@ -1,0 +1,29 @@
+{
+  repository(owner: "orstavik", name: "JoiComponents") {
+    name
+    description
+
+    object(expression: "master:src/") {
+      id
+      ... on Tree {
+        entries {
+          name
+        }
+      }
+    }
+  }
+}
+
+{
+  repository(owner: "orstavik", name: "JoiComponents") {
+    name
+    description
+
+    object(expression: "master:src/polyfill-loader.js") {
+      id
+      ... on Blob {
+        text
+      }
+    }
+  }
+}
