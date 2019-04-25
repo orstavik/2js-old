@@ -1,8 +1,6 @@
 import {SlotchangeMixin} from "https://unpkg.com/joicomponents@1.2.27/src/slot/SlotChildMixin.js";
 
-/**
- * no button is an attribute noButton
- */
+//todo I should probably add FallbackFix??
 
 class TreeNode extends SlotchangeMixin(HTMLElement) {
   constructor() {

@@ -1,24 +1,29 @@
-/*
-todo single hover, a hover that doesn't bubble.
-todo spawned from mouseenter mouseleave? works with touchstart, touchmove, touchend too?
-todo we can't listen for mouse down in the elements, as this will cause 100 mousedown listeners.. which will spawn
-todo 100 mousemove listeners. Horrible. we need a composed event, definitively!
-
-todo make a touchhover over event. brush. stroke. that works on both touch and mouse.
-todo when mouseenter, it is stroked. when it is touched, it is stroked. But we don't want to listen for all touchmoves, do we?
-
-
-
-todo add a chapter about this article
-https://stackoverflow.com/questions/3918842/how-to-find-out-the-actual-event-target-of-touchmove-javascript-event
-
-
- */
-
 /**
- * Global event that is always activated on the document.
- * Will dispatch a "touchover" event when a single finger enters an element.
- * Will dispatch a "touchleave" event when the single finger leaves the element.
+ * Touchover (or 'brush' or 'stroke') event
+ *
+ * Mimics :hover that does not bubble. Usable for both mouse and touch.
+ *
+ * Elements with 'touchover' attribute will receive:
+ * 1. "touchover" event when:
+ *    a. a single touch enters an element or
+ *    b. the mouse starts to hover over an element.
+ *
+ *
+ * 2. "touchleave" event when the touch or mouse leaves the surface of the `touchover` element.
+ *    If the "touchleave" event occurs as a result of a touchend over a `touchover` element,
+ *    then this "touchleave" event will have a `.detail.leaveOnTarget === true` value.
+ *
+ * If a `touchover` element is nested inside another `touchover` element,
+ * only the inner `touchover` element will react when the touch or mouse moves.
+ *
+ * ATT!! Very heavy, global composed event. Use with caution.
+ * Once loaded it always listens for the touchend, touchstart, mouseover and mouseout events on the document.
+ * But, to do this locally on every element would likely be worse, with 100 elements meaning 100 mouseover or touchstart
+ * listeners.
+ *
+ * todo add a chapter about this article
+ * Problem: TouchTarget
+ * https://stackoverflow.com/questions/3918842/how-to-find-out-the-actual-event-target-of-touchmove-javascript-event
  */
 (function () {
 
