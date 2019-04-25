@@ -1,7 +1,9 @@
-<script src="https://tbd-cdn.com/octokit/1.0.0/octokit.min.js"></script>
 <script>
-  const client = new Octokit();
-  const res = client.graphQL(`
+
+  fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: `
     {
       repository(owner: "orstavik", name: "JoiComponents") {
         name
@@ -15,6 +17,11 @@
         }
       }
     }
-  `);
-  console.log(res);
+  ` }),
+  })
+    .then(res => res.json())
+    .then(res => console.log(res.data));
+
+//  const res = client.graphQL();
+//  console.log(res);
 </script>
