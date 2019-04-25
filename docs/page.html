@@ -1,0 +1,97 @@
+<script src="https://unpkg.com/joicomponents@1.2.28/book/chapter6_layout/demo/SideBar.js"></script>
+<pretty-printer src="/assets/wc/PrettyPrinter.js"></pretty-printer>
+<script src="/assets/events/touchover.js"></script>
+<script type="module" src="/assets/wc/TreeNode.js"></script>
+
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+  }
+
+  side-bar[_size="L"] tree-node {
+    border: 2px solid grey;
+    padding: 10px;
+    display: block;
+  }
+  side-bar[_size="L"] tree-node:not([open]) > tree-node {
+    display: none;
+  }
+  side-bar[_size="L"] tree-node[selected] > a {
+    background: pink;
+  }
+
+  side-bar[_size="S"] tree-node {
+    font-size: 0;
+  }
+  side-bar[_size="S"] a {
+    display: block;
+    float: left;
+    width: 0;
+    height: 1em;
+    padding-left: 10px;
+    padding-top: 20px;
+
+    font-size: 12px;
+    background-color: purple;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-left: 3px;
+  }
+  side-bar[_size="S"] tree-node > tree-node > a {
+    background-color: orangered;
+  }
+  side-bar[_size="S"] tree-node > tree-node > tree-node > a {
+    background-color: orange;
+  }
+  side-bar[_size="S"] tree-node > tree-node > tree-node > tree-node > a {
+    background-color: yellow;
+  }
+  side-bar[_size="S"] tree-node[touch-over] > a {
+    padding-top: 85px;
+    overflow: visible;
+  }
+  side-bar[_size="S"] tree-node[selected] > a {
+    padding-top: 45px;
+    overflow: visible;
+  }
+</style>
+
+<side-bar>
+  <div slot="menu">
+    <tree-node><a touchover href="#home" slot="title">Book</a>
+      <tree-node><a touchover href="#world" slot="title">chapter 1</a>
+        <tree-node><a touchover href="#world" slot="title">chp 1.1</a></tree-node>
+        <tree-node selected><a touchover href="#world" slot="title">chp 1.2</a>
+          <tree-node><a touchover href="#sunshine" slot="title">chp 1.2.1</a></tree-node>
+          <tree-node><a touchover href="#blueSkies" slot="title">chp 1.2.2</a></tree-node>
+        </tree-node>
+        <tree-node><a touchover href="#world" slot="title">chp 1.3</a></tree-node>
+      </tree-node>
+      <tree-node><a touchover href="#world" slot="title">chapter 2</a>
+        <tree-node><a touchover href="#world" slot="title">chp 2.1</a></tree-node>
+        <tree-node><a touchover href="#world" slot="title">chp 2.2</a>
+          <tree-node><a touchover href="#sunshine" slot="title">chp 2.2.1</a></tree-node>
+          <tree-node><a touchover href="#blueSkies" slot="title">chp 2.2.2</a></tree-node>
+        </tree-node>
+      </tree-node>
+    </tree-node>
+  </div>
+  <h1>Hello sunshine</h1>
+</side-bar>
+
+
+<script>
+  let nodeList = document.querySelectorAll("[touchover]");
+  for (let i = 0; i < nodeList.length; i++) {
+    let touchoverNode = nodeList[i];
+    touchoverNode.addEventListener("touchover", function (e) {
+      e.target.parentNode.setAttribute("touch-over", "");
+    });
+    touchoverNode.addEventListener("touchleave", function (e) {
+      e.target.parentNode.removeAttribute("touch-over");
+      if (e.detail && e.detail.leaveOnTarget)
+        e.target.click();
+    });
+  }
+</script>
