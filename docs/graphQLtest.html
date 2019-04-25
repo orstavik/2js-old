@@ -1,0 +1,20 @@
+<script src="https://tbd-cdn.com/octokit/1.0.0/octokit.min.js"></script>
+<script>
+  const client = new Octokit();
+  const res = client.graphQL(`
+    {
+      repository(owner: "orstavik", name: "JoiComponents") {
+        name
+        description
+
+        object(expression: "master:src/polyfill-loader.js") {
+          id
+          ... on Blob {
+            text
+          }
+        }
+      }
+    }
+  `);
+  console.log(res);
+</script>
