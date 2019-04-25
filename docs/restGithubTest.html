@@ -1,0 +1,11 @@
+<script>
+
+  async function go() {
+
+    const bookCon = await fetch('https://api.github.com/repos/orstavik/JoiComponents/contents/book');
+    const json = await bookCon.json();
+    console.log(json.map(f => f.name));
+  }
+
+  go();
+</script>
