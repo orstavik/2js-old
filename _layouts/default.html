@@ -8,7 +8,7 @@
     async function getBook(name) {
       const bookCon = await fetch(name);
       const book1 = await bookCon.json();
-      const chaptersOnly = book1.filter(chp => chp.name.startsWith("book/chapter"));
+      const chaptersOnly = book1.tree.filter(chp => chp.name.startsWith("book/chapter"));
       return book1;
     }
 
