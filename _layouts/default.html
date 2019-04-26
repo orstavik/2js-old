@@ -15,7 +15,7 @@
     async function go() {
       debugger;
       //todo this here I need to generate in
-      return await getBook('https://api.github.com/repos/orstavik/JoiComponents/git/trees/{{ site.github.build_revision }}?recursive=2');
+      return await getBook('https://api.github.com/repos/orstavik/JoiComponents/git/trees/{{ site.github.latest_release }}?recursive=2');
     }
 
     console.log(go());
