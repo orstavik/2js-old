@@ -2,8 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="/2js/assets/css/style.css" />
-  <title>2js - {{ git revision HEAD }}</title>
+  <link rel="stylesheet" href="/2js/assets/css/style.css"/>
+  <title>2js at {{ site.github.build_revision }}</title>
+  <script>
+    async function getBook(name) {
+      const bookCon = await fetch(name);
+      const book1 = await bookCon.json();
+      const chaptersOnly = book1.filter(chp => chp.name.startsWith("book/chapter"));
+      return book1;
+    }
+
+    async function go() {
+      debugger;
+      //todo now, we have a limit of 60 per hour, if api.github.com does not cdn the result itself??
+      //todo if the api.github.com doesn't cdn itself, then this will max be called 60x per hour.
+      //todo if it is cdn, it will only be called once per build_revision
+      return await getBook('https://api.github.com/repos/orstavik/2js/git/trees/{{site.github.build_revision}}?recursive=2');
+    }
+
+    console.log(go());
+  </script>
+
 </head>
 <body>
 {{ content }}
