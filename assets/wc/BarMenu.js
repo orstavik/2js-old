@@ -41,10 +41,8 @@ function addTouchover(root) {
   let nodeList = root.querySelectorAll("a");
   for (let i = 0; i < nodeList.length; i++) {
     let a = nodeList[i];
-    a.setAttribute("touch-hover", "");
+    a.setAttribute("touch-hover", "click");
     a.addEventListener("touch-hover", function (e) {
-      console.log(e.target);
-      console.log(e.detail.enter);
       e.detail.enter === true ? e.target.setAttribute("hover", "") : e.target.removeAttribute("hover");
     });
   }

@@ -18,9 +18,8 @@
  */
 (function () {
 
-  var active = false;
   var prevTarget = undefined;
-  var prevTouchoverParent = undefined;
+  var relatedTarget = undefined;
 
   function findParentWithAttribute(node, attName) {
     for (var n = node; n; n = (n.parentNode || n.host)) {
@@ -30,16 +29,13 @@
     return undefined;
   }
 
-  function dispatchAfterthoughtEvent(target, eventName, enter) {
-    const t = target;
-    let ev = new CustomEvent(eventName, {
-      bubbles: true,
-      composed: true,
-      detail: {enter: enter, leave: !enter}
-    });
-    setTimeout(function () {
-      t.dispatchEvent(ev);
-    });
+  function dispatchTouchHover(target, enter) {
+    if (target) {
+      setTimeout(function () {
+        var detail = {enter: enter, leave: !enter};
+        target.dispatchEvent(new CustomEvent("touch-hover", {bubbles: true, composed: true, detail}));
+      }, 0);
+    }
   }
 
   function onTouchmove(e) {
@@ -48,14 +44,12 @@
     if (target === prevTarget)
       return;
     prevTarget = target;
-    var touchoverParent = findParentWithAttribute(target, "touch-hover");
-    if (touchoverParent === prevTouchoverParent)
+    var touchHoverTarget = findParentWithAttribute(target, "touch-hover");
+    if (touchHoverTarget === relatedTarget)
       return;
-    if (prevTouchoverParent)
-      dispatchAfterthoughtEvent(prevTouchoverParent, "touch-hover", false);
-    if (touchoverParent)
-      dispatchAfterthoughtEvent(touchoverParent, "touch-hover", true);
-    prevTouchoverParent = touchoverParent;
+    dispatchTouchHover(relatedTarget, false);
+    dispatchTouchHover(touchHoverTarget, true);
+    relatedTarget = touchHoverTarget;
   }
 
   function init(e) {
@@ -64,22 +58,20 @@
 
   function start(e) {
     document.addEventListener("touchmove", onTouchmove);
-    active = true;
   }
 
   function end(e) {
     document.removeEventListener("touchmove", onTouchmove);
-    active = false;
     prevTarget = undefined;
-    if (prevTouchoverParent) {
-      prevTouchoverParent.dispatchEvent(new CustomEvent("touch-hover", {
-        bubbles: true,
-        composed: true,
-        detail: {enter: false, leave: true}
-      }));
-      if (prevTouchoverParent.getAttribute("touch-hover") === "click")
-        prevTouchoverParent.click();
-      prevTouchoverParent = undefined;
+    if (relatedTarget) {
+      dispatchTouchHover(relatedTarget, false);
+      var clickMe = relatedTarget;
+      if (relatedTarget.getAttribute("touch-hover") === "click") {
+        setTimeout(function () {
+          clickMe.click();
+        }, 0);
+      }
+      relatedTarget = undefined;
     }
   }
 
