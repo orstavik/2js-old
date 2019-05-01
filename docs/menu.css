@@ -1,0 +1,50 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+side-bar[_size="L"] tree-node {
+  border: 2px solid grey;
+  padding: 10px;
+  display: block;
+}
+side-bar[_size="L"] tree-node:not([open]) > tree-node {
+  display: none;
+}
+side-bar[_size="L"] tree-node[selected] > a {
+  background: pink;
+}
+side-bar[_size="S"] tree-node {
+  font-size: 0;
+}
+side-bar[_size="S"] a {
+  display: block;
+  float: left;
+  width: 0;
+  height: 1em;
+  padding-left: 10px;
+  padding-top: 20px;
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-left: 0;
+}
+side-bar[_size="S"] tree-node > a {
+  background-color: purple;
+}
+side-bar[_size="S"] tree-node > tree-node > a {
+  background-color: orangered;
+}
+side-bar[_size="S"] tree-node > tree-node > tree-node > a {
+  background-color: orange;
+}
+side-bar[_size="S"] tree-node > tree-node > tree-node > tree-node > a {
+  background-color: yellow;
+}
+side-bar[_size="S"] tree-node[touch-over] > a {
+  padding-top: 85px;
+  overflow: visible;
+}
+side-bar[_size="S"] tree-node[selected] > a {
+  padding-top: 45px;
+  overflow: visible;
+}

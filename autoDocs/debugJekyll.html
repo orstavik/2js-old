@@ -1,0 +1,41 @@
+---
+# this page uses an empty Jekyll ---front matter--- that is processed every time the repos is committed
+# Debug!!
+# ********
+# ##this doesn't work for some reason.. {{ site.static_files | inspect }}
+# ##this works though.. {{ site.pages | inspect }}   # site.pages are all the files that jekyll has processed, in some way.
+# ##and this works.. {{ site | inspect }}
+#
+# List of commands in Liquid, the template language of Jekyll:
+#   https://gist.github.com/ryerh/b2fa73829f1b7b1c39988f09a65eb227
+#
+# HowTo make arrays in Liquid? Answer: use split, fx.:        | split: ","
+#   1: https://github.com/Shopify/liquid/issues/387
+#   2: http://www.codeshopify.com/blog_posts/building-arrays-with-liquid-in-shopify
+#
+# Can you make objects in Liquid? I think no..
+
+---
+<pre>{{ site | inspect }}</pre>
+<pre>
+{% assign arr = "10,20,300,4" | split: "," %}
+{% capture myArr %}{% for p in arr %}{{ p  | plus: 1 }}{% endfor %}::{% endcapture %}
+
+  {{ myArr | jsonify }}
+
+  [
+{% for p in site.static_files %}
+  {% if p.extname == ".md" and p.path contains "docs/" %}
+    {{ p.path }},
+  {% endif %}
+{% endfor %}
+  ]
+</pre>
+
+<hr>
+<pre>
+  {% assign xyz = "ybyby" %}
+{% for x in site.pages %}
+  {{ x | inspect}} .. {{ page.url }} .. {{xyz}}
+{% endfor %}
+</pre>

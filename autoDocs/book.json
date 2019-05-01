@@ -1,0 +1,18 @@
+---
+# empty ---front matter--- triggers Jekyll processing upon commit
+# [{% for p in site.static_files %}{% if p.extname == ".md" %}"{{ p.path }}", {% endif %}{% endfor %}]
+# content path name url
+# this page takes all the transformed markdown pages whose url startsWith/contains /docs/ and then
+# where name startsWith a number and then prints its path and its content | markdownify
+---
+{% assign bookPages = site.pages | where_exp:"p", "p.url contains '/docs/'" %}
+
+{% assign result = "" | split: "" %}
+{% for p in bookPages %}
+  {% assign arr = "" | split: "" %}
+  {% assign content = p.content | markdownify %}
+  {% assign arr = arr | push: p.url | push: content %}
+  {% assign result = result | push: arr %}
+{% endfor %}
+
+{{result | jsonify}}
