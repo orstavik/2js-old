@@ -40,7 +40,8 @@ side-bar[_size="S"] tree-node > tree-node > tree-node > a {
 side-bar[_size="S"] tree-node > tree-node > tree-node > tree-node > a {
   background-color: yellow;
 }
-side-bar[_size="S"] tree-node[touch-over] > a {
+side-bar[_size="S"] a[touch-hover],
+side-bar[_size="S"] a:hover {
   padding-top: 85px;
   overflow: visible;
 }

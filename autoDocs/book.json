@@ -6,6 +6,7 @@
 # where name startsWith a number and then prints its path and its content | markdownify
 ---
 {% assign bookPages = site.pages | where_exp:"p", "p.url contains '/docs/'" %}
+{% assign bookPages = bookPages | where_exp:"p", "p.path contains '.md'" %}
 
 {% assign result = "" | split: "" %}
 {% for p in bookPages %}
