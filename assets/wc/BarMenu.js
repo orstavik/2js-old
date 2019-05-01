@@ -40,15 +40,12 @@ function makeMenu(book, title) {
 function addTouchover(root) {
   let nodeList = root.querySelectorAll("a");
   for (let i = 0; i < nodeList.length; i++) {
-    let touchoverNode = nodeList[i];
-    touchoverNode.setAttribute("touchover", "");
-    touchoverNode.addEventListener("touchover", function (e) {
-      e.target.setAttribute("touch-hover", "");
-    });
-    touchoverNode.addEventListener("touchleave", function (e) {
-      e.target.removeAttribute("touch-hover");
-      if (e.detail && e.detail.leaveOnTarget)
-        e.target.click();
+    let a = nodeList[i];
+    a.setAttribute("touch-hover", "");
+    a.addEventListener("touch-hover", function (e) {
+      console.log(e.target);
+      console.log(e.detail.enter);
+      e.detail.enter === true ? e.target.setAttribute("hover", "") : e.target.removeAttribute("hover");
     });
   }
 }

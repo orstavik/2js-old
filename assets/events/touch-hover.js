@@ -1,27 +1,18 @@
 /**
- * Touchover (or 'brush' or 'stroke') event
+ * Touch-hover, mimics ':hover' that does not bubble.
  *
- * Mimics :hover that does not bubble. Usable for both mouse and touch.
+ * Elements with 'touch-hover' attribute will receive a "touch-hover" event when
+ * a single touch pointer pressed to the screen enters or leaves the boundaries of an element.
+ * The "touch-hover" event has two boolean details with a text string:
+ *  detail.enter: true when the touch enters the element
+ *  detail.leave: true when the touch leaves the element
  *
- * Elements with 'touchover' attribute will receive:
- * 1. "touchover" event when:
- *    a. a single touch enters an element or
- *    b. the mouse starts to hover over an element.
+ * If the "touch-hover" attribute has the value "click", then the touch-hover event will
+ * dispatch a "click" event on the element if the user lifts his touch finger on that element.
  *
+ * Att!!
+ * The "touch-hover" event listens for touchmove with "passive: false" globally. This is very heavy, use with caution.
  *
- * 2. "touchleave" event when the touch or mouse leaves the surface of the `touchover` element.
- *    If the "touchleave" event occurs as a result of a touchend over a `touchover` element,
- *    then this "touchleave" event will have a `.detail.leaveOnTarget === true` value.
- *
- * If a `touchover` element is nested inside another `touchover` element,
- * only the inner `touchover` element will react when the touch or mouse moves.
- *
- * ATT!! Very heavy, global composed event. Use with caution.
- * Once loaded it always listens for the touchend, touchstart, mouseover and mouseout events on the document.
- * But, to do this locally on every element would likely be worse, with 100 elements meaning 100 mouseover or touchstart
- * listeners.
- *
- * todo add a chapter about this article
  * Problem: TouchTarget
  * https://stackoverflow.com/questions/3918842/how-to-find-out-the-actual-event-target-of-touchmove-javascript-event
  */
@@ -39,9 +30,15 @@
     return undefined;
   }
 
-  function dispatchAfterthoughtEvent(target, eventName) {
+  function dispatchAfterthoughtEvent(target, eventName, enter) {
+    const t = target;
+    let ev = new CustomEvent(eventName, {
+      bubbles: true,
+      composed: true,
+      detail: {enter: enter, leave: !enter}
+    });
     setTimeout(function () {
-      target.dispatchEvent(new CustomEvent(eventName));
+      t.dispatchEvent(ev);
     });
   }
 
@@ -51,13 +48,13 @@
     if (target === prevTarget)
       return;
     prevTarget = target;
-    var touchoverParent = findParentWithAttribute(target, "touchover");
+    var touchoverParent = findParentWithAttribute(target, "touch-hover");
     if (touchoverParent === prevTouchoverParent)
       return;
     if (prevTouchoverParent)
-      dispatchAfterthoughtEvent(prevTouchoverParent, "touchleave");
+      dispatchAfterthoughtEvent(prevTouchoverParent, "touch-hover", false);
     if (touchoverParent)
-      dispatchAfterthoughtEvent(touchoverParent, "touchover");
+      dispatchAfterthoughtEvent(touchoverParent, "touch-hover", true);
     prevTouchoverParent = touchoverParent;
   }
 
@@ -75,7 +72,13 @@
     active = false;
     prevTarget = undefined;
     if (prevTouchoverParent) {
-      prevTouchoverParent.dispatchEvent(new CustomEvent("touchleave", {detail: {leaveOnTarget: true}}));
+      prevTouchoverParent.dispatchEvent(new CustomEvent("touch-hover", {
+        bubbles: true,
+        composed: true,
+        detail: {enter: false, leave: true}
+      }));
+      if (prevTouchoverParent.getAttribute("touch-hover") === "click")
+        prevTouchoverParent.click();
       prevTouchoverParent = undefined;
     }
   }
