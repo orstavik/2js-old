@@ -2,13 +2,14 @@
 #
 ---
 <script defer src="https://unpkg.com/joicomponents@1.2.29/book/chapter6_layout/demo/SideBar.js"></script>
-<script defer type="module" src="../assets/wc/TreeNode.js"></script>
-<script defer type="module" src="../assets/wc/BarMenu.js"></script>
+<script type="module" src="assets/wc/TreeNode.js"></script>
+<script type="module" src="assets/wc/BarMenu.js"></script>
+<script type="module" src="assets/wc/PowerIframe.js"></script>
 <!--<pretty-printer src="/assets/wc/PrettyPrinter.js"></pretty-printer>-->
-<script defer src="../assets/events/touch-hover.js"></script>
+<script defer src="assets/events/touch-hover.js"></script>
 
-<link href="menu.css" rel="stylesheet"/>
-<link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}"/>
+<link href="docs/menu.css" rel="stylesheet"/>
+<link rel="stylesheet" href="{{ 'assets/css/style.css' | relative_url }}"/>
 <style>
   #container {
     background: white;
@@ -17,17 +18,17 @@
 </style>
 <side-bar>
   <bar-menu slot="menu" src="https://orstavik.github.io/JoiComponents/autoDocs/book.json"></bar-menu>
-  <div id="container">
-    <h1>Hello sunshine</h1>
-  </div>
+  <power-iframe sandbox="allow-scripts" srcdoc="<i>Hello sunshine</i>"></power-iframe>
 </side-bar>
 
 
 <script>
   window.addEventListener("hashchange", function () {
     const path = window.location.hash.substr(1);
-    const content = "<base href='https://orstavik.github.io/JoiComponents" + path + "'>" + document.querySelector("bar-menu").getContent(path);
-    document.querySelector("#container").innerHTML = content;
+    const base = "https://orstavik.github.io/JoiComponents" + path;
+    const content = document.querySelector("bar-menu").getContent(path);
+    document.querySelector("power-iframe").setDocument(base, content);
+//    document.querySelector("power-iframe").setAttribute("srcdoc", content);
   });
   //todo move PrettyPrinter.js and CodeDemo.js into this chapter.
   //todo move TreeNode to its own RecursiveElement chapter.

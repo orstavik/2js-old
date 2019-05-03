@@ -1,7 +1,6 @@
 // import {StyleCallbackMixin} from "https://unpkg.com/joicomponents@1.2.27/src/style/StyleCallbackMixin.js";
 
 function pathsToTree(mdFiles) {
-  // const chapters = mdFiles.filter(path => path.startsWith("/book"));
   const chapters2 = mdFiles.map(path => path[0].substr(1).split("/"));
   const chapters3 = chapters2.filter(arr => arr.length === 3);
   const paths = chapters3.map(arr => [arr[1], arr[2], "/" + arr.join("/")]);
@@ -37,15 +36,13 @@ function makeMenu(book, title) {
   return [node, count];
 }
 
-function addTouchover(root) {
-  let nodeList = root.querySelectorAll("a");
-  for (let i = 0; i < nodeList.length; i++) {
-    let a = nodeList[i];
-    a.setAttribute("touch-hover", "click");
-    a.addEventListener("touch-hover", function (e) {
-      e.detail.enter === true ? e.target.setAttribute("hover", "") : e.target.removeAttribute("hover");
-    });
-  }
+function addTouchover(nodeList) {
+  for (let i = 0; i < nodeList.length; i++)
+    nodeList[i].setAttribute("touch-hover", "click");
+}
+
+function onTouchHover(e) {
+  e.detail.enter === true ? e.target.setAttribute("hover", "") : e.target.removeAttribute("hover");
 }
 
 class BarMenu extends /*StyleCallbackMixin(HTMLElement)*/ HTMLElement {
@@ -55,6 +52,7 @@ class BarMenu extends /*StyleCallbackMixin(HTMLElement)*/ HTMLElement {
     Promise.resolve().then(this.onStart.bind(this));
     this._hasStartupAttribute = false;
     this.mdFilesObj = {};
+    this.addEventListener("touch-hover", onTouchHover);
   }
 
   static get observedAttributes() {
@@ -103,7 +101,7 @@ class BarMenu extends /*StyleCallbackMixin(HTMLElement)*/ HTMLElement {
     </tree-node>
     </tree-node>
     </tree-node>
-` && addTouchover(this));
+` && addTouchover(this.querySelectorAll("a")));
     const jsonCon = await fetch(src);
     const mdFiles = await jsonCon.json();
     const book = pathsToTree(mdFiles);
@@ -113,7 +111,7 @@ class BarMenu extends /*StyleCallbackMixin(HTMLElement)*/ HTMLElement {
     const [bookNodes, count] = makeMenu(book, "JoiComponents");
     this.appendChild(bookNodes);
     document.styleSheets[0].cssRules[5].style.paddingLeft = (100 / count) + "%";
-    addTouchover(this);
+    addTouchover(this.querySelectorAll("a"));
   }
 
   getContent(path) {
