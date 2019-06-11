@@ -1,34 +1,54 @@
 ---
 #
 ---
+<link rel="preload" href="https://orstavik.github.io/JoiComponents/autoDocs/book.json">
 <script defer src="https://unpkg.com/joicomponents@1.2.29/book/chapter6_layout/demo/SideBar.js"></script>
-<script type="module" src="assets/wc/TreeNode.js"></script>
+<script defer type="module" src="https://unpkg.com/joicomponents@1.3.1/book/chapter11_iframe/demo/InlineIframe.js"></script>
+<script defer type="module" src="https://unpkg.com/joicomponents@1.3.2/book/chapter7_html_comp/demo/TreeNode.js"></script>
+<script defer type="module" src="https://unpkg.com/joicomponents@1.3.3/book/chapter6_layout/demo/GoldenPage.js"></script>
 <script type="module" src="assets/wc/BarMenu.js"></script>
-<script type="module" src="assets/wc/PowerIframe.js"></script>
-<!--<pretty-printer src="/assets/wc/PrettyPrinter.js"></pretty-printer>-->
 <script defer src="assets/events/touch-hover.js"></script>
 
 <link href="docs/menu.css" rel="stylesheet"/>
 <link rel="stylesheet" href="{{ 'assets/css/style.css' | relative_url }}"/>
 <style>
-  #container {
+  golden-page {
+    display: block;
     background: white;
-    padding: 16px 10px 10px 16px;
   }
 </style>
 <side-bar>
-  <bar-menu slot="menu" src="https://orstavik.github.io/JoiComponents/autoDocs/book.json"></bar-menu>
-  <power-iframe sandbox="allow-scripts" srcdoc="<i>Hello sunshine</i>"></power-iframe>
+  <bar-menu slot="menu"></bar-menu>
+  <golden-page>
+    <inline-iframe flow-width="400" sandbox="allow-scripts" srcdoc="<i>Hello sunshine €</i>"></inline-iframe>
+  </golden-page>
 </side-bar>
 
 
 <script>
+  let mdFilesObj = {};
+
+  async function loadJson(){
+    const jsonCon = await fetch("https://orstavik.github.io/JoiComponents/autoDocs/book.json");
+    const mdFiles = await jsonCon.json();
+    for (let [path, content] of mdFiles)
+      mdFilesObj[path] = content;
+    document.querySelector("bar-menu").loadJson(mdFiles);
+  }
+  loadJson();
+
+  window.addEventListener("resize", function(){
+    const iiframe = document.querySelector("inline-iframe");
+    iiframe.setAttribute("flow-width", iiframe.offsetWidth);
+  });
+
   window.addEventListener("hashchange", function () {
     const path = window.location.hash.substr(1);
     const base = "https://orstavik.github.io/JoiComponents" + path;
-    const content = document.querySelector("bar-menu").getContent(path);
-    document.querySelector("power-iframe").setDocument(base, content);
-//    document.querySelector("power-iframe").setAttribute("srcdoc", content);
+    const content = mdFilesObj[path];
+    let iframe = document.querySelector("inline-iframe");
+    iframe.setAttribute("base", base);
+    iframe.setContent(content);
   });
   //todo move PrettyPrinter.js and CodeDemo.js into this chapter.
   //todo move TreeNode to its own RecursiveElement chapter.
@@ -37,6 +57,10 @@
   //todo make the Menu into a web comp. The problem is that it listens for the attribute, so that it needs to set its
   //todo style as a custom css property instead of a variable in the lightDOM, unless we make it into a element that
   //todo replaces itself with a series of treenodes.. A web comp that populates the lightDOM.
+  //todo fix a chapter for PowerIframe
+  //todo fix a chapter for properties and attributes competing
+  //todo bug in menu, the menu should be added after the content, so that it has visual priority, or use z-index,
+  //todo but as that is global it is unsafe.
 </script>
 <script src="https://cdn.jsdelivr.net/npm/joievents@1.0.14/src/webcomps/PrettyPrinter.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/joievents@1.0.14/src/webcomps/CodeDemo.js"></script>
