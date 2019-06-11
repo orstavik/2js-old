@@ -4,7 +4,7 @@ function PRready(delay, cb) {
   cb();
 }
 
-function addSyncScript(src){
+function addSyncScript(src) {
   const pp = document.createElement("script");
   pp.src = src;
   document.body.appendChild(pp);
@@ -51,24 +51,24 @@ we don't want to do this, as it would load the script in every web component.
   }
 
   static get observedAttributes() {
-    return ["src"];
+    return ["href"];
   }
 
   async attributeChangedCallback(name, oldVal, newVal) {
-    if (name === "src"){
-      var data = await fetch(newVal);
-      var text = await data.text();
-      PRready(200, () => {
-        this.shadowRoot.children[1].innerHTML = PR.prettyPrintOne(text);
-        let i = 1;
-        let comment = getCommentText(this.shadowRoot, i);
-        while (comment) {
-          let div = makeCommentDiv(i, comment);
-          this.shadowRoot.children[1].appendChild(div);
-          comment = getCommentText(this.shadowRoot, ++i);
-        }
-      });
-    }
+    if (name !== "href")
+      return;
+    var data = await fetch(newVal);
+    var text = await data.text();
+    PRready(200, () => {
+      this.shadowRoot.children[1].innerHTML = PR.prettyPrintOne(text);
+      let i = 1;
+      let comment = getCommentText(this.shadowRoot, i);
+      while (comment) {
+        let div = makeCommentDiv(i, comment);
+        this.shadowRoot.children[1].appendChild(div);
+        comment = getCommentText(this.shadowRoot, ++i);
+      }
+    });
   }
 
   toggleComment(e) {
