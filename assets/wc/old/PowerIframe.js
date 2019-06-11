@@ -3,13 +3,38 @@
  */
 let iframeIDs = 1;
 
+const powerTemplate = `
+<style>
+  :host {
+    display: block;
+    position: relative; 
+    width: 100%; 
+    height: 100%;
+  }
+  * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    border: none;
+    overflow: visible;
+  }
+</style>
+<div id="spacer"></div>
+<iframe frameborder="0"></iframe>
+`;                     /*scrolling="no" */
+
 class PowerIframe extends HTMLElement {
 
   constructor() {
     super();
     this.attachShadow({mode: "open"});
-    this.shadowRoot.innerHTML = `<iframe width="100%" style="padding: 0;" frameborder="0"></iframe>`;
-    this._iframe = this.shadowRoot.childNodes[0];
+    this.shadowRoot.innerHTML = powerTemplate;
+    this._spacer = this.shadowRoot.children[1];
+    this._iframe = this.shadowRoot.children[2];
     this._toUpdate = false;
     this._uniqueID = "power-iframe-" + iframeIDs++;
     window.addEventListener("message", this.onMessage.bind(this));
@@ -61,9 +86,10 @@ class PowerIframe extends HTMLElement {
   getInnerIframePoller() {
     return `
 <script>
-  parent.postMessage("${this._uniqueID}::"+ document.body.scrollHeight +"::"+ document.body.scrollWidth, "*");
+  const root = document.children[0];
+  parent.postMessage("${this._uniqueID}::"+ root.scrollHeight +"::"+ root.scrollWidth, "*");
   setInterval(function() {
-    parent.postMessage("${this._uniqueID}::"+ document.body.scrollHeight +"::"+ document.body.scrollWidth, "*");
+    parent.postMessage("${this._uniqueID}::"+ root.scrollHeight +"::"+ root.scrollWidth, "*");
   }, 500);
 </script>`;
   }
@@ -80,8 +106,10 @@ class PowerIframe extends HTMLElement {
     const parts = e.data.split("::");
     if (parts[0] !== this._uniqueID)
       return;
-    this._iframe.setAttribute("height", parts[1] + "px");
-    // this._iframe.setAttribute("width", parts[2] + "px");
+    this._spacer.style.height = parts[1] + "px";
+    this._spacer.style.width = parts[2] + "px";
+    this._iframe.style.height = parts[1] + "px";
+    this._iframe.style.width = parts[2] + "px";
   }
 }
 
