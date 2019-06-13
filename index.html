@@ -6,22 +6,9 @@
 <script defer type="module" src="https://unpkg.com/joicomponents@1.3.1/book/chapter11_iframe/demo/InlineIframe.js"></script>
 <script defer type="module" src="https://unpkg.com/joicomponents@1.3.2/book/chapter7_html_comp/demo/TreeNode.js"></script>
 <script defer type="module" src="https://unpkg.com/joicomponents@1.3.3/book/chapter6_layout/demo/GoldenPage.js"></script>
-<script src="assets/wc/BarMenu.js"></script>
-<script defer src="assets/events/touch-hover.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/joievents@1.0.14/src/webcomps/PrettyPrinter.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/joievents@1.0.14/src/webcomps/CodeDemo.js">
-  //todo move PrettyPrinter.js and CodeDemo.js into this chapter.
-  //todo move TreeNode to its own RecursiveElement chapter.
-  //todo Move the code away from this repo to the JoiComponents repo.
-  //todo move touchover to ComposedEvent.
-  //todo make the Menu into a web comp. The problem is that it listens for the attribute, so that it needs to set its
-  //todo style as a custom css property instead of a variable in the lightDOM, unless we make it into a element that
-  //todo replaces itself with a series of treenodes.. A web comp that populates the lightDOM.
-  //todo fix a chapter for PowerIframe
-  //todo fix a chapter for properties and attributes competing
-  //todo bug in menu, the menu should be added after the content, so that it has visual priority, or use z-index,
-  //todo but as that is global it is unsafe.
-</script>
+<script defer src="https://unpkg.com/joievents@1.0.16/docs/6_TouchGestures/demo/touch-hover.js"></script>
+<script defer id="alpha" src="assets/wc/CodeDemo.js"></script>
+<script defer id="beta" src="assets/wc/PrettyPrinter.js"></script>
 
 <link href="docs/menu.css" rel="stylesheet"/>
 <link rel="stylesheet" id="uno" href="{{ 'assets/css/style.css' | relative_url }}"/>
@@ -29,6 +16,9 @@
   * {
     margin: 0;
     padding: 0;
+  }
+  body {
+    --responsive-element-menu-l-width: 300px;
   }
   golden-page {
     display: block;
@@ -45,12 +35,50 @@
   <div id="bar-menu" slot="menu"></div>
   <golden-page>
     <inline-iframe
-        included-resources="link#uno"
+        included-resources="link#uno script#alpha script#beta"
         flow-width="400" sandbox="allow-scripts" srcdoc="<i>Hello sunshine €</i>"></inline-iframe>
   </golden-page>
 </side-bar>
 
 <script>
+  function pathsToTree(mdFiles) {
+    const chapters2 = mdFiles.map(path => path[0].substr(1).split("/"));
+    const chapters3 = chapters2.filter(arr => arr.length === 3);
+    const paths = chapters3.map(arr => [arr[1], arr[2], "/" + arr.join("/")]);
+    const book = {};
+    for (let chp of paths){
+      (book[chp[0]] || (book[chp[0]] = {}))[chp[1]] = chp[2];
+    }
+    return book;
+  }
+
+  const treeNode = document.createElement("template");
+  treeNode.innerHTML = `<tree-node><a>sunshine</a>`;
+
+  function makeTreeNode(title, href) {
+    let node = treeNode.content.cloneNode(true).children[0];
+    title = title.split("_").map(txt => "<span>" + txt + "</span>").join(" ");
+    node.children[0].innerHTML = title;
+    href && node.children[0].setAttribute("href", href);
+    return node;
+  }
+
+  function makeMenu(mdFiles, title) {
+    const book = pathsToTree(mdFiles);
+    let count = 1;
+    const node = makeTreeNode(title);
+    for (let [key, value] of Object.entries(book)) {
+      count++;
+      let chp = makeTreeNode(key);
+      node.appendChild(chp);
+      for (let [key2, value2] of Object.entries(value)) {
+        count++;
+        chp.appendChild(makeTreeNode(key2, "#" + value2));
+      }
+    }
+    return [node, count];
+  }
+
   let menu = {};
 
   async function loadMenu(){
@@ -62,20 +90,33 @@
 
     const [bookNodes, count] = makeMenu(mdFiles, "JoiComponents");
     barMenu.appendChild(bookNodes);
+    bookNodes.setAttribute("open", "");
     document.styleSheets[0].cssRules[5].style.paddingLeft = (100 / count) + "%";
+    //add touch-hover
     const nodeList = barMenu.querySelectorAll("a");
     for (let i = 0; i < nodeList.length; i++)
       nodeList[i].setAttribute("touch-hover", "click");
   }
   loadMenu();
 
-  window.addEventListener("resize", function(){
+  function listener(){
     const iiframe = document.querySelector("inline-iframe");
     iiframe.setAttribute("flow-width", iiframe.offsetWidth);
-  });
+  }
 
-  document.querySelector("#bar-menu").addEventListener("touch-hover", function onTouchHover(e) {
-    e.detail.enter === true ? e.target.setAttribute("hover", "") : e.target.removeAttribute("hover");
+  window.addEventListener("resize", listener);
+  setTimeout(listener, 1000);
+
+  //todo there is a bug in the touch-hover event when i click, then sometimes touch-hover is not triggered?
+  //todo sometimes touch-leave is not dispatched or captured for an element that has been touch-hovered.
+  document.addEventListener("touch-hover", function onTouchHover(e) {
+    e.target.setAttribute("hover", "");
+  });
+  document.addEventListener("touch-leave", function onTouchHover(e) {
+    e.target.removeAttribute("hover");
+  });
+  document.addEventListener("touch-cancel", function onTouchHover(e) {
+    e.target.removeAttribute("hover");
   });
 
   window.addEventListener("hashchange", function () {
@@ -86,4 +127,8 @@
     iframe.setAttribute("base", base);
     iframe.setContent(content);
   });
+
+  //todo fix a chapter for properties and attributes competing
+  //todo bug in menu, the menu should be added after the content, so that it has visual priority, or use z-index,
+  //todo but as that is global it is unsafe.
 </script>

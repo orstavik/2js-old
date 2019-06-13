@@ -3,8 +3,8 @@
   margin: 0;
 }
 side-bar[_size="L"] tree-node {
-  border: 2px solid grey;
-  padding: 10px;
+  /*border: 2px solid grey;*/
+  padding-left: 10px;
   display: block;
 }
 side-bar[_size="L"] tree-node:not([open]) > tree-node {
